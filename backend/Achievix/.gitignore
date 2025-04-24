@@ -33,7 +33,7 @@ build/
 .vscode/
 
 # App config
-src/main/resources/application.yml
+application.yml
 
 # Logs
 logs/
