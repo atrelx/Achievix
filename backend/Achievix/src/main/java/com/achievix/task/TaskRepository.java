@@ -1,6 +1,6 @@
-package org.example.achievix.task;
+package com.achievix.task;
 
-import org.example.achievix.goal.Goal;
+import com.achievix.goal.Goal;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

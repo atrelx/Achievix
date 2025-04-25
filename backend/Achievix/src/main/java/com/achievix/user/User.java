@@ -1,4 +1,4 @@
-package org.example.achievix.user;
+package com.achievix.user;
 
 import jakarta.persistence.*;
 import lombok.Data;

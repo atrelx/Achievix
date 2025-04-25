@@ -1,4 +1,4 @@
-package org.example.achievix;
+package com.achievix;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

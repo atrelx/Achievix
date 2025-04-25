@@ -1,8 +1,8 @@
-package org.example.achievix.task;
+package com.achievix.task;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import org.example.achievix.goal.Goal;
+import com.achievix.goal.Goal;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
