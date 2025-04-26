@@ -17,6 +17,7 @@ CREATE TABLE goals (
                        current_value INT DEFAULT 0,
                        deadline DATE,
                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                       updated_at DATETIME,
                        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
@@ -25,7 +26,9 @@ CREATE TABLE tasks (
                        goal_id BIGINT NOT NULL,
                        title VARCHAR(255) NOT NULL,
                        completed BOOLEAN DEFAULT FALSE,
+                       completed_at DATETIME,
                        deadline DATE,
                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                        FOREIGN KEY (goal_id) REFERENCES goals(id) ON DELETE CASCADE
 );
+

@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.MySQLContainer;
@@ -21,6 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Testcontainers
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@ActiveProfiles("test")
 public class TaskRepositoryTest {
 
     @Container
@@ -37,8 +39,6 @@ public class TaskRepositoryTest {
         registry.add("spring.datasource.url", mysql::getJdbcUrl);
         registry.add("spring.datasource.username", mysql::getUsername);
         registry.add("spring.datasource.password", mysql::getPassword);
-        registry.add("spring.jpa.hibernate.ddl-auto", () -> "validate");
-        registry.add("spring.jpa.show-sql", () -> "true");
     }
 
     @Autowired
@@ -90,5 +90,32 @@ public class TaskRepositoryTest {
 
         List<Task> tasks = taskRepository.findByGoal(goal);
         assertThat(tasks).isEmpty();
+    }
+
+    @Test
+    void shouldSetCompletedAtWhenTaskIsCompleted() {
+        User user = new User();
+        user.setEmail("test@example.com");
+        user.setPasswordHash("hashedPassword");
+        user = userRepository.save(user);
+
+        Goal goal = new Goal();
+        goal.setUser(user);
+        goal.setTitle("Read 10 books");
+        goal.setTargetValue(10);
+        goal = goalRepository.save(goal);
+
+        Task task = new Task();
+        task.setGoal(goal);
+        task.setTitle("Read book 1");
+        task.setCompleted(false);
+        task = taskRepository.save(task);
+
+        task.setCompleted(true);
+        task = taskRepository.save(task);
+
+        Task updatedTask = taskRepository.findById(task.getId()).orElseThrow();
+        assertThat(updatedTask.getCompleted()).isTrue();
+        assertThat(updatedTask.getCompletedAt()).isNotNull();
     }
 }

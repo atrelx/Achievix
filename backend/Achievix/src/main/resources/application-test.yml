@@ -1,0 +1,23 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/achievix
+    username: root
+    password: rootpassword
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false # False for tests
+
+# ignores logging of SQL statements
+logging:
+  level:
+    org.hibernate.SQL: ERROR
+    org.hibernate.type.descriptor.sql: ERROR
+    org.hibernate.orm.jdbc.bind: ERROR
+    org.hibernate.type: ERROR
+
+jwt:
+  secret: your-very-secure-secret-key-1234567890
+  access-token-expiration: 900
+  refresh-token-expiration: 604800

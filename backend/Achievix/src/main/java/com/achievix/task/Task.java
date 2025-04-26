@@ -26,9 +26,21 @@ public class Task {
     @Column(nullable = false)
     private Boolean completed = false;
 
-    @Column
-    private LocalDate deadline;
+    @Column(name = "completed_at")
+    private LocalDateTime completedAt;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    @Column
+    private LocalDate deadline;
+
+    public void setCompleted(Boolean completed) {
+        this.completed = completed;
+        if (completed) {
+            this.completedAt = LocalDateTime.now();
+        } else {
+            this.completedAt = null;
+        }
+    }
 }
