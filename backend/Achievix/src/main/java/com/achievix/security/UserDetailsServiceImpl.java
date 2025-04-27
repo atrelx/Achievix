@@ -1,5 +1,7 @@
-package com.achievix.user;
+package com.achievix.security;
 
+import com.achievix.user.User;
+import com.achievix.user.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

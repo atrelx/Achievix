@@ -27,7 +27,7 @@ public class UserController {
 
         String userId = authentication.getName();
         User user = userService.getCurrentUser(Long.parseLong(userId));
-        UserDTO userDTO = new UserDTO(user.getId(), user.getEmail());
+        UserDTO userDTO = new UserDTO(user.getId(), user.getEmail(), user.getCreatedAt());
         return ResponseEntity.ok(userDTO);
     }
 }
