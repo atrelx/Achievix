@@ -6,6 +6,8 @@ import com.achievix.goal.dto.GoalDTO;
 import com.achievix.goal.Goal;
 import com.achievix.goal.GoalRepository;
 import com.achievix.goal.GoalMapper;
+import com.achievix.kafka.KafkaProducerService;
+import com.achievix.sendgrid.dto.EmailNotificationDTO;
 import com.achievix.user.User;
 import com.achievix.user.UserRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,11 +22,16 @@ public class GoalService {
     private final GoalRepository goalRepository;
     private final UserRepository userRepository;
     private final GoalMapper goalMapper;
+    private final KafkaProducerService kafkaProducerService;
 
-    public GoalService(GoalRepository goalRepository, UserRepository userRepository, GoalMapper goalMapper) {
+    public GoalService(GoalRepository goalRepository,
+                       UserRepository userRepository,
+                       GoalMapper goalMapper,
+                       KafkaProducerService kafkaProducerService) {
         this.goalRepository = goalRepository;
         this.userRepository = userRepository;
         this.goalMapper = goalMapper;
+        this.kafkaProducerService = kafkaProducerService;
     }
 
     public List<GoalDTO> getUserGoals() {
@@ -41,6 +48,12 @@ public class GoalService {
         Goal goal = goalMapper.toEntity(goalDTO);
         goal.setUser(user);
         goal.setCurrentValue(0);
+
+        EmailNotificationDTO emailNotification = new EmailNotificationDTO();
+        emailNotification.setToEmail(user.getEmail());
+        emailNotification.setSubject("New Goal Created");
+        emailNotification.setBody("You have created a new goal: " + goal.getTitle());
+        kafkaProducerService.sendEmailNotification(emailNotification);
 
         Goal savedGoal = goalRepository.save(goal);
         return goalMapper.toDTO(savedGoal);

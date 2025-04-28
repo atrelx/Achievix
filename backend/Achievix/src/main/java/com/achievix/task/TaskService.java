@@ -2,6 +2,8 @@ package com.achievix.task;
 
 import com.achievix.exception.ResourceNotFoundException;
 import com.achievix.exception.UnauthorizedAccessException;
+import com.achievix.kafka.KafkaProducerService;
+import com.achievix.task.dto.TaskCompletedEventDTO;
 import com.achievix.task.dto.TaskDTO;
 import com.achievix.goal.Goal;
 import com.achievix.goal.GoalRepository;
@@ -17,11 +19,16 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final GoalRepository goalRepository;
     private final TaskMapper taskMapper;
+    private final KafkaProducerService kafkaProducerService;
 
-    public TaskService(TaskRepository taskRepository, GoalRepository goalRepository, TaskMapper taskMapper) {
+    public TaskService(TaskRepository taskRepository,
+                       GoalRepository goalRepository,
+                       TaskMapper taskMapper,
+                       KafkaProducerService kafkaProducerService) {
         this.taskRepository = taskRepository;
         this.goalRepository = goalRepository;
         this.taskMapper = taskMapper;
+        this.kafkaProducerService = kafkaProducerService;
     }
 
     public List<TaskDTO> getTasksByGoal(Long goalId) {
@@ -65,6 +72,14 @@ public class TaskService {
 
         task.setCompleted(true);
         Task updatedTask = taskRepository.save(task);
+
+        TaskCompletedEventDTO event = new TaskCompletedEventDTO();
+        event.setTaskId(updatedTask.getId());
+        event.setTitle(updatedTask.getTitle());
+        event.setGoalId(updatedTask.getGoal().getId());
+        event.setCompletedAt(updatedTask.getCompletedAt());
+        kafkaProducerService.sendTaskCompletedEvent(event);
+
         return taskMapper.toDTO(updatedTask);
     }
 
