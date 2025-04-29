@@ -120,4 +120,20 @@ public class UserServiceTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Invalid refresh token");
     }
+
+    @Test
+    void shouldGetCurrentUserSuccessfully() {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        User foundUser = userService.getCurrentUser(1L);
+        assertThat(foundUser).isEqualTo(user);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUserNotFoundForGetCurrentUser() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> userService.getCurrentUser(99L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("User not found");
+    }
 }

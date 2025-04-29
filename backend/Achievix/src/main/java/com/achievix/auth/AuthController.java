@@ -4,6 +4,7 @@ import com.achievix.user.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,14 +21,14 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody AuthRequest request, HttpServletResponse response) {
+    public ResponseEntity<String> register(@Valid @RequestBody AuthRequest request, HttpServletResponse response) {
         Map<String, String> tokens = userService.register(request.getEmail(), request.getPassword());
         setTokensInCookies(response, tokens);
         return ResponseEntity.ok("Registration successful");
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody AuthRequest request, HttpServletResponse response) {
+    public ResponseEntity<String> login(@Valid @RequestBody AuthRequest request, HttpServletResponse response) {
         Map<String, String> tokens = userService.login(request.getEmail(), request.getPassword());
         setTokensInCookies(response, tokens);
         return ResponseEntity.ok("Login successful");

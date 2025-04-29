@@ -1,6 +1,7 @@
 package com.achievix.goal;
 
 import com.achievix.goal.dto.GoalDTO;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +24,7 @@ public class GoalController {
     }
 
     @PostMapping
-    public ResponseEntity<GoalDTO> createGoal(@RequestBody GoalDTO goalDTO) {
+    public ResponseEntity<GoalDTO> createGoal(@Valid @RequestBody GoalDTO goalDTO) {
         GoalDTO createdGoal = goalService.createGoal(goalDTO);
         return ResponseEntity.ok(createdGoal);
     }

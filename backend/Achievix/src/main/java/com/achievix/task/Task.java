@@ -57,4 +57,13 @@ public class Task {
             completedAt = null;
         }
     }
+
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
+        if (completed) {
+            this.completedAt = LocalDateTime.now();
+        } else {
+            this.completedAt = null;
+        }
+    }
 }
