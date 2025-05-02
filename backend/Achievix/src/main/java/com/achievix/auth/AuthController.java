@@ -1,5 +1,6 @@
 package com.achievix.auth;
 
+import com.achievix.security.JwtUtil;
 import com.achievix.user.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,9 +16,11 @@ import java.util.Map;
 public class AuthController {
 
     private final UserService userService;
+    private final JwtUtil jwtUtil;
 
-    public AuthController(UserService userService) {
+    public AuthController(UserService userService, JwtUtil jwtUtil) {
         this.userService = userService;
+        this.jwtUtil = jwtUtil;
     }
 
     @PostMapping("/register")
@@ -32,6 +35,12 @@ public class AuthController {
         Map<String, String> tokens = userService.login(request.getEmail(), request.getPassword());
         setTokensInCookies(response, tokens);
         return ResponseEntity.ok("Login successful");
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout (HttpServletRequest request, HttpServletResponse response) {
+        userService.logout(request, response);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/refresh")
@@ -54,6 +63,26 @@ public class AuthController {
         Map<String, String> tokens = userService.refresh(refreshToken);
         setTokensInCookies(response, tokens);
         return ResponseEntity.ok("Token refreshed");
+    }
+
+    @GetMapping("/check")
+    public ResponseEntity<Void> checkAuthentication(HttpServletRequest request) {
+        String accessToken = null;
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("accessToken".equals(cookie.getName())) {
+                    accessToken = cookie.getValue();
+                    break;
+                }
+            }
+        }
+
+        if (accessToken == null || !jwtUtil.validateToken(accessToken)) {
+            return ResponseEntity.status(401).build();
+        }
+
+        return ResponseEntity.ok().build();
     }
 
     private void setTokensInCookies(HttpServletResponse response, Map<String, String> tokens) {

@@ -1,0 +1,44 @@
+@import 'tailwindcss';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@theme {
+  --color-primary: #4F46E5; /* (Indigo) - Buttons, accents */
+  --color-secondary: #10B981; /* (Emerald) - Success states, task completion */
+  --color-background: #F9FAFB; /* (Gray-50) - Main background */
+  --color-text: #1F2937; /* (Gray-900) - Primary text */
+  --color-text-secondary: #6B7280; /* (Gray-500) - Subtle text */
+  --color-error: #EF4444; /* (Red-500) - Validation errors */
+  --color-surface: #FFFFFF; /* (White) - Cards, modals */
+  --color-border: #D1D5DB; /* (Gray-300) - Borders, dividers */
+}
+
+@layer utilities {
+  @keyframes modal-fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes modal-scale-up {
+    from {
+      transform: scale(0.95);
+    }
+    to {
+      transform: scale(1);
+    }
+  }
+
+  .modal-bg-animation {
+    animation: modal-fade-in 0.3s ease-in-out;
+  }
+
+  .modal-content-animation {
+    animation: modal-fade-in 0.3s ease-in-out, modal-scale-up 0.3s ease-in-out;
+  }
+}

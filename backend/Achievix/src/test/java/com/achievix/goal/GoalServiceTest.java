@@ -2,6 +2,7 @@ package com.achievix.goal;
 
 import com.achievix.exception.ResourceNotFoundException;
 import com.achievix.exception.UnauthorizedAccessException;
+import com.achievix.goal.dto.CreateGoalDTO;
 import com.achievix.goal.dto.GoalDTO;
 import com.achievix.kafka.KafkaProducerService;
 import com.achievix.sendgrid.dto.EmailNotificationDTO;
@@ -18,6 +19,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,6 +49,7 @@ public class GoalServiceTest {
     private User user;
     private Goal goal;
     private GoalDTO goalDTO;
+    private CreateGoalDTO createGoalDTO;
 
     @BeforeEach
     void setUp() {
@@ -61,6 +64,12 @@ public class GoalServiceTest {
 
         goalDTO = new GoalDTO();
         goalDTO.setTitle("Test Goal");
+
+        createGoalDTO = new CreateGoalDTO();
+        createGoalDTO.setTitle("Test Goal");
+        createGoalDTO.setTargetValue(100);
+        createGoalDTO.setDeadline(LocalDate.now().plusDays(30));
+
 
         // Mocking the SecurityContext so that user is logged in
         SecurityContext securityContext = mock(SecurityContext.class);
@@ -81,7 +90,7 @@ public class GoalServiceTest {
         when(goalRepository.save(any(Goal.class))).thenReturn(goal);
 
 
-        GoalDTO createdGoal = goalService.createGoal(goalDTO);
+        GoalDTO createdGoal = goalService.createGoal(createGoalDTO);
 
         assertThat(createdGoal.getTitle()).isEqualTo("Test Goal");
         verify(goalRepository).save(any(Goal.class));
@@ -91,7 +100,7 @@ public class GoalServiceTest {
     void shouldThrowExceptionWhenUserNotFoundForCreateGoal() {
         when(userRepository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> goalService.createGoal(goalDTO))
+        assertThatThrownBy(() -> goalService.createGoal(createGoalDTO))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage("User with ID 1 not found");
     }

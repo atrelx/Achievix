@@ -2,6 +2,7 @@ package com.achievix.goal;
 
 import com.achievix.exception.ResourceNotFoundException;
 import com.achievix.exception.UnauthorizedAccessException;
+import com.achievix.goal.dto.CreateGoalDTO;
 import com.achievix.goal.dto.GoalDTO;
 import com.achievix.goal.Goal;
 import com.achievix.goal.GoalRepository;
@@ -40,12 +41,12 @@ public class GoalService {
         return goals.stream().map(goalMapper::toDTO).collect(Collectors.toList());
     }
 
-    public GoalDTO createGoal(GoalDTO goalDTO) {
+    public GoalDTO createGoal(CreateGoalDTO createGoalDTO) {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findById(Long.parseLong(userId))
                 .orElseThrow(() -> new ResourceNotFoundException("User with ID " + userId + " not found"));
 
-        Goal goal = goalMapper.toEntity(goalDTO);
+        Goal goal = goalMapper.toEntity(createGoalDTO);
         goal.setUser(user);
         goal.setCurrentValue(0);
 

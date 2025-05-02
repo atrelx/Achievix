@@ -13,5 +13,4 @@ public class AuthRequest {
     private String email;
     @NotBlank
     private String password;
-
 }
