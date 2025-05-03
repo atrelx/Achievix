@@ -53,6 +53,10 @@ public class TaskService {
             throw new UnauthorizedAccessException("You do not have permission to create a task for this goal");
         }
 
+        // Increment the target value of the goal "adding" task to a goal
+        goal.setTargetValue(goal.getTargetValue() + 1);
+        goalRepository.save(goal);
+
         Task task = taskMapper.toEntity(taskDTO);
         task.setGoal(goal);
         task.setCompleted(false);
@@ -73,6 +77,11 @@ public class TaskService {
         task.setCompleted(true);
         Task updatedTask = taskRepository.save(task);
 
+        // Increment the goal's current value "completing" task for a goal
+        Goal goal = task.getGoal();
+        goal.setCurrentValue(goal.getCurrentValue() + 1);
+        goalRepository.save(goal);
+
         TaskCompletedEventDTO event = new TaskCompletedEventDTO();
         event.setTaskId(updatedTask.getId());
         event.setTitle(updatedTask.getTitle());
@@ -91,6 +100,15 @@ public class TaskService {
         if (!task.getGoal().getUser().getId().equals(Long.parseLong(userId))) {
             throw new UnauthorizedAccessException("You do not have permission to delete this task");
         }
+
+        // Decrement the goal's target value "deleting" task for a goal
+        Goal goal = task.getGoal();
+        goal.setTargetValue(goal.getTargetValue() - 1);
+        // Decrement the goal's current value if task is completed
+        if (task.getCompleted()) {
+            goal.setCurrentValue(goal.getCurrentValue() - 1);
+        }
+        goalRepository.save(goal);
 
         taskRepository.delete(task);
     }

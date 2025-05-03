@@ -2,10 +2,7 @@ package com.achievix.goal;
 
 import com.achievix.user.User;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -29,12 +26,13 @@ public class Goal {
     private String title;
 
     @NotNull(message = "Target value is required")
-    @Positive(message = "Target value must be positive")
+    @PositiveOrZero(message = "Target value must be positive or zero")
     @Column(name = "target_value", nullable = false)
     private Integer targetValue;
 
     @NotNull(message = "Current value is required")
     @Column(name = "current_value", nullable = false)
+    @PositiveOrZero(message = "Current value must be positive or zero")
     private Integer currentValue;
 
     @FutureOrPresent(message = "Deadline must be in the present or future")

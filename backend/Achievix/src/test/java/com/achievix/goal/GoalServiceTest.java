@@ -67,7 +67,6 @@ public class GoalServiceTest {
 
         createGoalDTO = new CreateGoalDTO();
         createGoalDTO.setTitle("Test Goal");
-        createGoalDTO.setTargetValue(100);
         createGoalDTO.setDeadline(LocalDate.now().plusDays(30));
 
 

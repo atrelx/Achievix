@@ -15,7 +15,6 @@ export interface GoalDTO {
 
 export interface CreateGoalDTO {
     title: string
-    targetValue: number
     deadline: string
 }
 
@@ -32,7 +31,7 @@ export interface DashboardDTO {
 
 export interface ArchiveEntry {
   title: string
-  completedAt: string
+  completedAt: string | null
 }
 
 export interface TaskDTO {
@@ -41,7 +40,7 @@ export interface TaskDTO {
   title: string
   completed: boolean
   completedAt: string | null
-  deadline: string
+  deadline: string | null
   createdAt: string
 }
 

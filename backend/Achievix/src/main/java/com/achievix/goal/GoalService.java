@@ -4,9 +4,6 @@ import com.achievix.exception.ResourceNotFoundException;
 import com.achievix.exception.UnauthorizedAccessException;
 import com.achievix.goal.dto.CreateGoalDTO;
 import com.achievix.goal.dto.GoalDTO;
-import com.achievix.goal.Goal;
-import com.achievix.goal.GoalRepository;
-import com.achievix.goal.GoalMapper;
 import com.achievix.kafka.KafkaProducerService;
 import com.achievix.sendgrid.dto.EmailNotificationDTO;
 import com.achievix.user.User;
@@ -41,22 +38,39 @@ public class GoalService {
         return goals.stream().map(goalMapper::toDTO).collect(Collectors.toList());
     }
 
+    public GoalDTO getGoalById(Long goalId) {
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        Goal goal = goalRepository.findById(goalId)
+                .orElseThrow(() -> new ResourceNotFoundException("Goal with ID " + goalId + " not found"));
+
+        if (!goal.getUser().getId().equals(Long.parseLong(userId))) {
+            throw new UnauthorizedAccessException("You do not have permission to access this goal");
+        }
+
+        return goalMapper.toDTO(goal);
+    }
+
     public GoalDTO createGoal(CreateGoalDTO createGoalDTO) {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findById(Long.parseLong(userId))
                 .orElseThrow(() -> new ResourceNotFoundException("User with ID " + userId + " not found"));
+        System.out.println("User found: " + user);
+        System.out.println("CreateGoalDTO: " + createGoalDTO);
 
         Goal goal = goalMapper.toEntity(createGoalDTO);
         goal.setUser(user);
         goal.setCurrentValue(0);
+        goal.setTargetValue(0);
 
         EmailNotificationDTO emailNotification = new EmailNotificationDTO();
         emailNotification.setToEmail(user.getEmail());
         emailNotification.setSubject("New Goal Created");
         emailNotification.setBody("You have created a new goal: " + goal.getTitle());
-        kafkaProducerService.sendEmailNotification(emailNotification);
+//        kafkaProducerService.sendEmailNotification(emailNotification);
 
+        System.out.println("Goal before saving: " + goal);
         Goal savedGoal = goalRepository.save(goal);
+        System.out.println("Goal created: " + savedGoal);
         return goalMapper.toDTO(savedGoal);
     }
 

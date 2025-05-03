@@ -30,7 +30,7 @@ public interface GoalMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "user", ignore = true)
     @Mapping(target = "title", source = "createGoalDTO.title")
-    @Mapping(target = "targetValue", source = "createGoalDTO.targetValue")
+    @Mapping(target = "targetValue", ignore = true)
     @Mapping(target = "currentValue", ignore = true)
     @Mapping(target = "deadline", source = "createGoalDTO.deadline")
     @Mapping(target = "createdAt", ignore = true)

@@ -1,12 +1,13 @@
 package com.achievix.goal;
 
+import com.achievix.goal.dto.CreateGoalDTO;
 import com.achievix.goal.dto.GoalDTO;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-05-08T21:46:26+0200",
+    date = "2025-05-09T15:02:23+0200",
     comments = "version: 1.6.0, compiler: javac, environment: Java 22.0.2 (Amazon.com Inc.)"
 )
 @Component
@@ -42,6 +43,20 @@ public class GoalMapperImpl implements GoalMapper {
         goal.setTitle( goalDTO.getTitle() );
         goal.setTargetValue( goalDTO.getTargetValue() );
         goal.setDeadline( goalDTO.getDeadline() );
+
+        return goal;
+    }
+
+    @Override
+    public Goal toEntity(CreateGoalDTO createGoalDTO) {
+        if ( createGoalDTO == null ) {
+            return null;
+        }
+
+        Goal goal = new Goal();
+
+        goal.setTitle( createGoalDTO.getTitle() );
+        goal.setDeadline( createGoalDTO.getDeadline() );
 
         return goal;
     }

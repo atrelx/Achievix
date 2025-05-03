@@ -12,7 +12,7 @@
         <form @submit.prevent="handleSubmit">
           <div class="mb-4">
             <label for="title" class="block text-text-secondary mb-2">
-              Title <span class="text-8px text-error">*</span>
+              Title<span class="text-8px text-error">*</span>
             </label>
             <input
               v-model="form.title"
@@ -22,18 +22,6 @@
               @blur="v$.title.$touch"
             />
             <span v-if="v$.title.$error" class="text-error text-sm">{{ v$.title.$errors[0].$message }}</span>
-          </div>
-          <div class="mb-4">
-            <label for="targetValue" class="block text-text-secondary mb-2">Target Value</label>
-            <input
-              v-model.number="form.targetValue"
-              type="number"
-              id="targetValue"
-              class="w-full p-2 border rounded"
-              :class="{ 'border-error': v$.targetValue.$error }"
-              @blur="v$.targetValue.$touch"
-            />
-            <span v-if="v$.targetValue.$error" class="text-error text-sm">{{ v$.targetValue.$errors[0].$message }}</span>
           </div>
           <div class="mb-4">
             <label for="deadline" class="block text-text-secondary mb-2">Deadline</label>
@@ -73,7 +61,7 @@
 <script setup lang="ts">
 import { ref, defineProps, defineEmits } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
-import { required, minValue, helpers } from '@vuelidate/validators'
+import { required, helpers } from '@vuelidate/validators'
 import type {CreateGoalDTO} from "@/types/dtos.ts";
 
 defineProps({
@@ -86,14 +74,12 @@ const isLoading = ref(false)
 const errorMessage = ref('')
 const form = ref<CreateGoalDTO>({
   title: '',
-  targetValue: 1,
   deadline: '',
 })
 
 const today = new Date().toISOString().split('T')[0]
 const rules = {
   title: { required, $lazy: true },
-  targetValue: { required, minValue: minValue(1), $lazy: true },
   deadline: {
     required,
     minDate: helpers.withMessage('Deadline must be today or later', (value: string) => value >= today),
@@ -104,7 +90,7 @@ const v$ = useVuelidate(rules, form)
 
 const close = () => {
   emit('close')
-  form.value = { title: '', targetValue: 1, deadline: '' }
+  form.value = { title: '', deadline: '' }
   v$.value.$reset()
 }
 
@@ -112,6 +98,9 @@ const handleSubmit = async () => {
   isLoading.value = true
   errorMessage.value = ''
   try {
+    if (!form.value.deadline) {
+      form.value.deadline = null
+    }
     emit('submit', form.value)
     console.log('Form submitted:', form.value)
     close()

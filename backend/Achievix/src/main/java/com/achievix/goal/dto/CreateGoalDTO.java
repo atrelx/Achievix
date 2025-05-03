@@ -13,10 +13,6 @@ public class CreateGoalDTO {
     @NotBlank(message = "Title cannot be blank")
     private String title;
 
-    @NotNull(message = "Target value cannot be null")
-    @Positive(message = "Target value must be a positive number")
-    private Integer targetValue;
-
     @FutureOrPresent(message = "Deadline must be in the present or future")
     private LocalDate deadline;
 }

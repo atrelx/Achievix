@@ -1,9 +1,6 @@
 package com.achievix.goal.dto;
 
-import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -19,12 +16,15 @@ public class GoalDTO {
     @NotBlank(message = "Title cannot be blank")
     private String title;
 
+    // is being set and updated by the service
+    // 0 means not started >0 means in progress
     @NotNull(message = "Target value cannot be null")
-    @Positive(message = "Target value must be a positive number")
+    @PositiveOrZero(message = "Target value must be a positive number")
     private Integer targetValue;
 
+    // is being set and updated by the service
     @NotNull(message = "Current value cannot be null")
-    @Positive(message = "Current value must be a positive number")
+    @PositiveOrZero(message = "Current value must be a positive number")
     private Integer currentValue;
 
     @FutureOrPresent(message = "Deadline must be in the present or future")
