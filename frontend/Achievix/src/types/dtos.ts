@@ -8,12 +8,23 @@ export interface GoalDTO {
   title: string
   targetValue: number
   currentValue: number
-  deadline: string
+  deadline: string | null
   createdAt: string
-  updatedAt: string
+  updatedAt: string | null
 }
 
-export interface CreateGoalDTO {
+export interface GoalDetailsDTO {
+  id: number
+  title: string
+  targetValue: number
+  currentValue: number
+  deadline: string | null
+  createdAt: string
+  updatedAt: string | null
+  tasks: TaskDTO[]
+}
+
+export interface GoalCreateDTO {
     title: string
     deadline: string
 }
@@ -42,6 +53,12 @@ export interface TaskDTO {
   completedAt: string | null
   deadline: string | null
   createdAt: string
+}
+
+export interface TaskCreateDTO {
+  title: string
+  goalId: number
+  deadline: string | null
 }
 
 export interface TaskCompletedEventDTO {

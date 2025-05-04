@@ -3,12 +3,11 @@
     <div v-if="isVisible"
          class="fixed inset-0 bg-black/70 bg-opacity-50 flex items-center justify-center modal-bg-animation"
          @click.self="close">
-    >
       <div
         class="bg-surface p-6 rounded-lg w-full max-w-md modal-content-animation"
         @click.stop
       >
-        <h2 class="text-xl font-bold text-text mb-4">Create Goal</h2>
+        <h2 class="text-xl font-bold text-text mb-4">Create Task</h2>
         <form @submit.prevent="handleSubmit">
           <div class="mb-4">
             <label for="title" class="block text-text-secondary mb-2">
@@ -62,18 +61,20 @@
 import { ref, defineProps, defineEmits } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
 import { required, helpers } from '@vuelidate/validators'
-import type {GoalCreateDTO} from "@/types/dtos.ts";
+import type { TaskCreateDTO } from "@/types/dtos.ts"
 
-defineProps({
-  isVisible: Boolean,
-})
+const { isVisible, goalId } = defineProps<{
+  isVisible: boolean;
+  goalId: number;
+}>()
 
 const emit = defineEmits(['close', 'submit'])
 
 const isLoading = ref(false)
 const errorMessage = ref('')
-const form = ref<GoalCreateDTO>({
+const form = ref<TaskCreateDTO>({
   title: '',
+  goalId: goalId,
   deadline: '',
 })
 
@@ -81,8 +82,7 @@ const today = new Date().toISOString().split('T')[0]
 const rules = {
   title: { required, $lazy: true },
   deadline: {
-    required,
-    minDate: helpers.withMessage('Deadline must be today or later', (value: string) => value >= today),
+    minDate: helpers.withMessage('Deadline must be today or later', (value: string) => !value || value >= today),
     $lazy: true,
   },
 }
@@ -90,7 +90,7 @@ const v$ = useVuelidate(rules, form)
 
 const close = () => {
   emit('close')
-  form.value = { title: '', deadline: '' }
+  form.value = { title: '', goalId, deadline: '' }
   v$.value.$reset()
 }
 
@@ -99,10 +99,9 @@ const handleSubmit = async () => {
   errorMessage.value = ''
   try {
     emit('submit', form.value)
-    console.log('Form submitted:', form.value)
     close()
   } catch (error: any) {
-    errorMessage.value = error.message || 'An error occurred while creating the goal.' // Show error
+    errorMessage.value = error.message || 'An error occurred while creating the task.'
   } finally {
     isLoading.value = false
   }

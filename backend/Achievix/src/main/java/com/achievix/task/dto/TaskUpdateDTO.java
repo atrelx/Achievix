@@ -9,8 +9,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
-public class TaskDTO {
-
+public class TaskUpdateDTO {
     @NotNull(message = "ID cannot be null")
     private Long id;
 
@@ -21,7 +20,6 @@ public class TaskDTO {
     private String title;
 
     private Boolean completed;
-    private LocalDateTime completedAt;
 
     @FutureOrPresent(message = "Deadline must be in the present or future")
     private LocalDate deadline;

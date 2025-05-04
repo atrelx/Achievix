@@ -4,6 +4,7 @@ import com.achievix.exception.ResourceNotFoundException;
 import com.achievix.exception.UnauthorizedAccessException;
 import com.achievix.goal.dto.CreateGoalDTO;
 import com.achievix.goal.dto.GoalDTO;
+import com.achievix.goal.dto.GoalDetailsDTO;
 import com.achievix.kafka.KafkaProducerService;
 import com.achievix.sendgrid.dto.EmailNotificationDTO;
 import com.achievix.user.User;
@@ -38,7 +39,7 @@ public class GoalService {
         return goals.stream().map(goalMapper::toDTO).collect(Collectors.toList());
     }
 
-    public GoalDTO getGoalById(Long goalId) {
+    public GoalDetailsDTO getGoalDetailsById(Long goalId) {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
         Goal goal = goalRepository.findById(goalId)
                 .orElseThrow(() -> new ResourceNotFoundException("Goal with ID " + goalId + " not found"));
@@ -47,7 +48,7 @@ public class GoalService {
             throw new UnauthorizedAccessException("You do not have permission to access this goal");
         }
 
-        return goalMapper.toDTO(goal);
+        return goalMapper.toDetailsDTO(goal);
     }
 
     public GoalDTO createGoal(CreateGoalDTO createGoalDTO) {

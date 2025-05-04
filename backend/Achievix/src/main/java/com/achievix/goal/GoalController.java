@@ -2,6 +2,7 @@ package com.achievix.goal;
 
 import com.achievix.goal.dto.CreateGoalDTO;
 import com.achievix.goal.dto.GoalDTO;
+import com.achievix.goal.dto.GoalDetailsDTO;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,9 +31,9 @@ public class GoalController {
         return ResponseEntity.ok(createdGoal);
     }
 
-    @GetMapping("/{goalId}")
-    public ResponseEntity<GoalDTO> getGoalById(@PathVariable Long goalId) {
-        GoalDTO goal = goalService.getGoalById(goalId);
+    @GetMapping("/{goalId}/details")
+    public ResponseEntity<GoalDetailsDTO> getGoalDetailsById(@PathVariable Long goalId) {
+        GoalDetailsDTO goal = goalService.getGoalDetailsById(goalId);
         return ResponseEntity.ok(goal);
     }
 

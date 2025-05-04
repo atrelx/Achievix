@@ -4,12 +4,14 @@ import com.achievix.exception.ResourceNotFoundException;
 import com.achievix.exception.UnauthorizedAccessException;
 import com.achievix.kafka.KafkaProducerService;
 import com.achievix.task.dto.TaskCompletedEventDTO;
+import com.achievix.task.dto.TaskCreateDTO;
 import com.achievix.task.dto.TaskDTO;
 import com.achievix.goal.Goal;
 import com.achievix.goal.GoalRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,10 +46,10 @@ public class TaskService {
         return tasks.stream().map(taskMapper::toDTO).collect(Collectors.toList());
     }
 
-    public TaskDTO createTask(TaskDTO taskDTO) {
+    public TaskDTO createTask(TaskCreateDTO taskCreateDTO) {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
-        Goal goal = goalRepository.findById(taskDTO.getGoalId())
-                .orElseThrow(() -> new ResourceNotFoundException("Goal with ID " + taskDTO.getGoalId() + " not found"));
+        Goal goal = goalRepository.findById(taskCreateDTO.getGoalId())
+                .orElseThrow(() -> new ResourceNotFoundException("Goal with ID " + taskCreateDTO.getGoalId() + " not found"));
 
         if (!goal.getUser().getId().equals(Long.parseLong(userId))) {
             throw new UnauthorizedAccessException("You do not have permission to create a task for this goal");
@@ -57,8 +59,9 @@ public class TaskService {
         goal.setTargetValue(goal.getTargetValue() + 1);
         goalRepository.save(goal);
 
-        Task task = taskMapper.toEntity(taskDTO);
+        Task task = taskMapper.toEntity(taskCreateDTO);
         task.setGoal(goal);
+        task.setCreatedAt(LocalDateTime.now());
         task.setCompleted(false);
 
         Task savedTask = taskRepository.save(task);

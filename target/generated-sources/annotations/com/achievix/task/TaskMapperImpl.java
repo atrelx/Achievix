@@ -1,13 +1,14 @@
 package com.achievix.task;
 
 import com.achievix.goal.Goal;
+import com.achievix.task.dto.TaskCreateDTO;
 import com.achievix.task.dto.TaskDTO;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-05-09T15:02:23+0200",
+    date = "2025-05-09T19:29:39+0200",
     comments = "version: 1.6.0, compiler: javac, environment: Java 22.0.2 (Amazon.com Inc.)"
 )
 @Component
@@ -42,6 +43,20 @@ public class TaskMapperImpl implements TaskMapper {
 
         task.setTitle( taskDTO.getTitle() );
         task.setDeadline( taskDTO.getDeadline() );
+
+        return task;
+    }
+
+    @Override
+    public Task toEntity(TaskCreateDTO taskCreateDTO) {
+        if ( taskCreateDTO == null ) {
+            return null;
+        }
+
+        Task task = new Task();
+
+        task.setTitle( taskCreateDTO.getTitle() );
+        task.setDeadline( taskCreateDTO.getDeadline() );
 
         return task;
     }

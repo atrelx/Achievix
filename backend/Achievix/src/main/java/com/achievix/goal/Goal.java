@@ -1,5 +1,6 @@
 package com.achievix.goal;
 
+import com.achievix.task.Task;
 import com.achievix.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -7,6 +8,7 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "goals")
@@ -20,6 +22,9 @@ public class Goal {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @OneToMany(mappedBy = "goal", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Task> tasks;
 
     @NotBlank(message = "Title is required")
     @Column(nullable = false)

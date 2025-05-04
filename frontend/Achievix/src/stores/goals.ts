@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import api from "../utils/api.ts";
 import { handleApiError } from "../utils/errorHandler.ts";
-import type { CreateGoalDTO, GoalDTO, DashboardDTO } from '../types/dtos'
+import type {GoalCreateDTO, GoalDTO, DashboardDTO, GoalDetailsDTO} from '../types/dtos'
 
 export const useGoalsStore = defineStore('goals', {
   state: () => ({
@@ -29,7 +29,15 @@ export const useGoalsStore = defineStore('goals', {
         handleApiError(error);
       }
     },
-    async createGoal(goal: CreateGoalDTO) {
+    async fetchGoalDetails(id: number) {
+      try {
+        const response = await api.get(`/goals/${id}/details`)
+        return response.data as GoalDetailsDTO
+      } catch (error: any) {
+        handleApiError(error);
+      }
+    },
+    async createGoal(goal: GoalCreateDTO) {
       try {
         const response = await api.post('/goals', goal);
         this.goals.push(response.data);
@@ -49,9 +57,10 @@ export const useGoalsStore = defineStore('goals', {
         handleApiError(error);
       }
     },
-    async fetchDashboard() {
+    async fetchDashboard(selectedPeriodType: string) {
       try {
-        const response = await api.get('/dashboard')
+        const response = await api.get(`/dashboard?periodType=${selectedPeriodType}`)
+        console.log(response.data)
         return response.data as DashboardDTO
       } catch (error: any) {
         handleApiError(error);

@@ -1,5 +1,6 @@
 package com.achievix.task;
 
+import com.achievix.task.dto.TaskCreateDTO;
 import com.achievix.task.dto.TaskDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -24,4 +25,13 @@ public interface TaskMapper {
     @Mapping(target = "deadline", source = "deadline")
     @Mapping(target = "createdAt", ignore = true)
     Task toEntity(TaskDTO taskDTO);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "goal", ignore = true) // has to be set in the service method
+    @Mapping(target = "title", source = "title")
+    @Mapping(target = "completed", ignore = true)
+    @Mapping(target = "completedAt", ignore = true)
+    @Mapping(target = "deadline", source = "deadline")
+    @Mapping(target = "createdAt", ignore = true)
+    Task toEntity(TaskCreateDTO taskCreateDTO);
 }

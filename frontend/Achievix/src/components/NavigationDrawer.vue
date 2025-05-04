@@ -67,7 +67,7 @@ import { useAuthStore } from '../stores/auth'
 import { useGoalsStore } from '../stores/goals'
 import DeleteModal from './DeleteModal.vue'
 import GoalModal from '../components/GoalModal.vue';
-import type {CreateGoalDTO} from "../types/dtos.ts";
+import type {GoalCreateDTO} from "../types/dtos.ts";
 
 const isOpen = ref(true)
 const authStore = useAuthStore()
@@ -119,7 +119,7 @@ const deleteGoal = async () => {
   }
 }
 
-const createGoal = async (goalData: CreateGoalDTO) => {
+const createGoal = async (goalData: GoalCreateDTO) => {
   try {
     await goalsStore.createGoal(goalData)
     closeGoalModal()

@@ -1,5 +1,6 @@
 package com.achievix.task;
 
+import com.achievix.task.dto.TaskCreateDTO;
 import com.achievix.task.dto.TaskDTO;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -24,8 +25,8 @@ public class TaskController {
     }
 
     @PostMapping
-    public ResponseEntity<TaskDTO> createTask(@Valid @RequestBody TaskDTO taskDTO) {
-        TaskDTO createdTask = taskService.createTask(taskDTO);
+    public ResponseEntity<TaskDTO> createTask(@Valid @RequestBody TaskCreateDTO taskCreateDTO) {
+        TaskDTO createdTask = taskService.createTask(taskCreateDTO);
         return ResponseEntity.ok(createdTask);
     }
 

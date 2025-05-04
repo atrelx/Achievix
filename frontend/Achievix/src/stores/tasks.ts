@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
-import type { TaskDTO } from '../types/dtos'
+import type {TaskCreateDTO, TaskDTO} from '../types/dtos'
 import api from '../utils/api'
+import {handleApiError} from "@/utils/errorHandler.ts";
 
 export const useTasksStore = defineStore('tasks', {
   state: () => ({
@@ -8,31 +9,55 @@ export const useTasksStore = defineStore('tasks', {
   }),
   actions: {
     async fetchTasks(goalId: number) {
-      const response = await api.get(`/tasks?goalId=${goalId}`)
-      this.tasks = response.data
-      return this.tasks
+      try {
+        const response = await api.get(`/tasks?goalId=${goalId}`)
+        this.tasks = response.data
+        return this.tasks
+      } catch (error: any) {
+        handleApiError(error);
+      }
     },
     async fetchTask(id: number) {
-      const response = await api.get(`/tasks/${id}`)
-      return response.data
+      try {
+        const response = await api.get(`/tasks/${id}`)
+        return response.data
+      } catch (error: any) {
+        handleApiError(error);
+      }
     },
-    async createTask(task: { title: string; goalId: number; deadline: string }) {
-      const response = await api.post('/tasks', task)
-      this.tasks.push(response.data)
-      return response.data
+    async createTask(task: TaskCreateDTO) {
+      try{
+        const response = await api.post('/tasks', task)
+        this.tasks.push(response.data)
+        return response.data
+      } catch (error: any) {
+        handleApiError(error);
+      }
     },
     async updateTask(id: number, task: { title: string; goalId: number; deadline: string }) {
-      const response = await api.put(`/tasks/${id}`, task)
-      const index = this.tasks.findIndex((t) => t.id === id)
-      if (index !== -1) this.tasks[index] = response.data
-      return response.data
+      try {
+        const response = await api.put(`/tasks/${id}`, task)
+        const index = this.tasks.findIndex((t) => t.id === id)
+        if (index !== -1) this.tasks[index] = response.data
+        return response.data
+      } catch (error: any) {
+        handleApiError(error);
+      }
     },
     async completeTask(id: number) {
-      await api.put(`/tasks/${id}`, { completed: true }, { withCredentials: true })
+      try {
+        await api.put(`/tasks/${id}/complete`, { completed: true })
+      } catch (error: any) {
+        handleApiError(error);
+      }
     },
     async deleteTask(id: number) {
-      await api.delete(`/tasks/${id}`)
-      this.tasks = this.tasks.filter((t) => t.id !== id)
+      try {
+        await api.delete(`/tasks/${id}`)
+        this.tasks = this.tasks.filter((t) => t.id !== id)
+      } catch (error: any) {
+        handleApiError(error);
+      }
     },
   },
 })
