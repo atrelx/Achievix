@@ -14,6 +14,7 @@ services:
       retries: 5
     volumes:
       - mysql-data:/var/lib/mysql
+      - ./init-scripts:/docker-entrypoint-initdb.d # Remove in production
   kafka:
     image: bitnami/kafka
     container_name: achievix-kafka

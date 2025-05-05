@@ -6,23 +6,37 @@
     <div v-else-if="goal">
       <h1 class="text-3xl font-bold text-text mb-4">{{ goal.title }}</h1>
       <div class="bg-surface p-6 rounded-lg shadow-lg mb-6">
-        <p class="text-text-secondary">Progress: {{ goal.currentValue }} / {{ goal.targetValue }}</p>
+        <p class="text-text font-semibold text-lg">Progress: {{ goal.currentValue }} / {{ goal.targetValue }}</p>
         <div class="w-full bg-gray-200 rounded-full h-2.5 mt-2">
           <div
-            class="bg-primary h-2.5 rounded-full"
+            class="h-2.5 rounded-full"
+            :class="{
+              'bg-gray-200': goal.targetValue === 0,
+              'bg-secondary': goal.targetValue > 0 && goal.currentValue >= goal.targetValue,
+              'bg-primary': goal.targetValue > 0 && goal.currentValue < goal.targetValue
+            }"
             :style="{ width: `${(goal.currentValue / goal.targetValue) * 100}%`, transition: 'width 0.5s ease-in-out' }"
           ></div>
         </div>
         <p class="text-text-secondary mt-2">Deadline: {{ goal.deadline ? formatDate(goal.deadline) : 'No deadline' }}</p>
       </div>
       <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl font-semibold text-text">Tasks</h2>
+        <h2 class="text-2xl font-semibold text-text">Tasks</h2>
         <button
           @click="openTaskModal"
-          class="px-4 py-2 bg-primary text-white rounded hover:bg-primary/85 cursor-pointer"
+          class="px-6 font-semibold text-lg py-2 bg-primary text-white rounded hover:bg-primary/85 cursor-pointer"
         >
           Add Task
         </button>
+      </div>
+      <div v-if="goal.tasks.length === 0" class="text-xl text-text-secondary flex items-center justify-center h-full">
+        This goal has no tasks yet.&nbsp;
+        <span
+          @click="openTaskModal"
+          class="text-blue-500 underline cursor-pointer"
+        >
+        Assign new tasks.</span>
+
       </div>
       <ul class="space-y-4">
         <li v-for="task in goal.tasks" :key="task.id"
@@ -76,7 +90,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import {ref, onMounted, watch} from 'vue'
 import { useRoute } from 'vue-router'
 import { useGoalsStore } from '../stores/goals'
 import { useTasksStore } from '../stores/tasks'
@@ -93,17 +107,28 @@ const showTaskModal = ref(false)
 const showDeleteModal = ref(false)
 const deleteTaskId = ref<number | null>(null)
 const deleteTaskTitle = ref('')
-const goalId = Number(route.params.id)
+const goalId = ref(Number(route.params.id))
 
 const formatDate = (date: string) => new Date(date).toLocaleDateString()
 
-onMounted(async () => {
-  isLoading.value = true
+const fetchGoalDetails = async () => {
+  const loadingDelay = setTimeout(() => {
+    isLoading.value = true;
+  }, 200);
+
   try {
-    goal.value = await goalsStore.fetchGoalDetails(goalId)
+    goal.value = await goalsStore.fetchGoalDetails(goalId.value)
   } finally {
+    clearTimeout(loadingDelay)
     isLoading.value = false
   }
+}
+
+onMounted(fetchGoalDetails)
+
+watch(() => route.params.id, (newId) => {
+  goalId.value = Number(newId)
+  fetchGoalDetails()
 })
 
 const openTaskModal = () => {
@@ -117,13 +142,13 @@ const closeTaskModal = () => {
 const createTask = async (task: TaskCreateDTO) => {
   console.log('Creating task:', task)
   await tasksStore.createTask(task)
-  goal.value = await goalsStore.fetchGoalDetails(goalId)
+  await fetchGoalDetails()
   closeTaskModal()
 }
 
 const completeTask = async (taskId: number) => {
   await tasksStore.completeTask(taskId)
-  goal.value = await goalsStore.fetchGoalDetails(goalId)
+  await fetchGoalDetails()
 }
 
 const openDeleteModal = (id: number, title: string) => {
@@ -141,7 +166,7 @@ const closeDeleteModal = () => {
 const deleteTask = async () => {
   if (deleteTaskId.value) {
     await tasksStore.deleteTask(deleteTaskId.value)
-    goal.value = await goalsStore.fetchGoalDetails(goalId)
+    await fetchGoalDetails()
     closeDeleteModal()
   }
 }

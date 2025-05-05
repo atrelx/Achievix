@@ -29,7 +29,7 @@ public class UserRepositoryTest {
             .withDatabaseName("achievix")
             .withUsername("root")
             .withPassword("rootpassword")
-            .withInitScript("init.sql")
+            .withInitScript("01-init.sql")
             .withStartupTimeoutSeconds(120)
             .withEnv("MYSQL_LOG_CONSOLE", "true");
 

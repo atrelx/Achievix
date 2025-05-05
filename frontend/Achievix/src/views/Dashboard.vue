@@ -1,30 +1,17 @@
 <template>
-  <div class="p-6">
-    <h1 class="text-3xl font-bold text-text mb-6">Dashboard</h1>
+  <div class="p-4">
     <div v-if="isLoading" class="flex justify-center">
       <span class="animate-spin text-primary text-4xl">⌀</span>
     </div>
     <div v-else>
       <div class="mb-4">
-        <label for="periodType" class="block text-text-secondary mb-2">Select Period Type:</label>
-        <select
-          id="periodType"
-          v-model="selectedPeriodType"
-          class="p-2 border rounded w-full md:w-1/3"
-        >
-          <option value="day">Day</option>
-          <option value="month">Month</option>
-          <option value="year">Year</option>
-        </select>
-      </div>
-      <div class="mb-4">
         <div class="flex justify-center space-x-4">
           <button
             :class="{
               'bg-primary text-white': selectedView === 'goals',
-              'bg-gray-200 text-text': selectedView !== 'goals',
+              'bg-gray-300 text-text hover:bg-gray-300/80 cursor-pointer': selectedView !== 'goals',
             }"
-            class="px-4 py-2 rounded"
+            class="px-4 py-2 rounded text-lg font-semibold"
             @click="selectedView = 'goals'"
           >
             Goals
@@ -32,9 +19,9 @@
           <button
             :class="{
               'bg-primary text-white': selectedView === 'tasks',
-              'bg-gray-200 text-text': selectedView !== 'tasks',
+              'bg-gray-300 text-text hover:bg-gray-300/80 cursor-pointer': selectedView !== 'tasks',
             }"
-            class="px-4 py-2 rounded"
+            class="px-6 py-2 rounded font-semibold"
             @click="selectedView = 'tasks'"
           >
             Tasks
@@ -42,50 +29,52 @@
         </div>
       </div>
       <div class="grid grid-cols-2 gap-6">
-        <!-- Left Top Div -->
-        <div class="p-4 bg-surface rounded shadow">
-          <h2 class="text-xl font-bold text-text mb-2">Stats</h2>
-          <p class="text-text-secondary">
-            Completed: {{ selectedView === 'goals' ? dashboard.completedGoals : dashboard.completedTasks }}
+        <!-- Stats Div -->
+        <div class="p-4 bg-surface rounded shadow space-y-6">
+          <h2 class="text-2xl font-bold text-text">Global Statistics</h2>
+          <p class="text-text text-xl ml-4">
+            <span class="font-semibold text-green-600">Completed ✅:</span> {{ selectedView === 'goals' ? dashboard.completedGoals : dashboard.completedTasks }}
           </p>
-          <p class="text-text-secondary">
-            Active: {{ selectedView === 'goals' ? dashboard.activeGoals : dashboard.activeTasks }}
+          <p class="text-text text-xl ml-4">
+            <span class="font-semibold text-blue-600">Active 🔄:</span> {{ selectedView === 'goals' ? dashboard.activeGoals : dashboard.activeTasks }}
           </p>
-          <p class="text-text-secondary">
-            Completion Rate: {{
+          <p class="text-text text-xl ml-4">
+            <span class="font-semibold">Completion Rate 📊:</span> {{
               selectedView === 'goals'
-                ? ((dashboard.completedGoals / (dashboard.completedGoals + dashboard.activeGoals)) * 100).toFixed(2)
-                : ((dashboard.completedTasks / (dashboard.completedTasks + dashboard.activeTasks)) * 100).toFixed(2)
+                ? ((dashboard.completedGoals / (dashboard.completedGoals + dashboard.activeGoals)) * 100)
+                : ((dashboard.completedTasks / (dashboard.completedTasks + dashboard.activeTasks)) * 100)
             }}%
           </p>
         </div>
 
-        <!-- Right Bottom Div -->
+        <!-- Recently Completed Div -->
         <div class="p-4 bg-surface rounded shadow col-start-2 row-start-2">
-          <h2 class="text-xl font-bold text-text mb-2">Recently Completed</h2>
-          <ul class="text-text-secondary space-y-2">
+          <h2 class="text-2xl font-bold text-text mb-2">Recently Completed</h2>
+          <ul class="text-text space-y-2 text-xl ml-4">
             <li
-              v-for="entry in (selectedView === 'goals' ? dashboard.completedGoalsArchive : dashboard.completedTasksArchive)"
+              v-for="entry in (selectedView === 'goals' ? dashboard.completedGoalsArchive.slice(0, 5) : dashboard.completedTasksArchive.slice(0, 5))"
               :key="entry.title"
             >
-              {{ entry.title }} - {{ formatDate(entry.completedAt) }}
+              <span class="font-semibold">{{ entry.title }}</span> - {{ formatDate(entry.completedAt) }}
             </li>
           </ul>
         </div>
 
         <!-- Line Chart -->
-        <LineChart
-          :chart-data="selectedView === 'goals' ? goalsLineChartData : tasksLineChartData"
-          :chart-options="chartOptions"
-          class="mt-4"
-        />
+        <div class="p-4 bg-surface rounded shadow">
+          <LineChart
+            :chart-data="selectedView === 'goals' ? goalsLineChartData : tasksLineChartData"
+            :chart-options="chartOptions"
+          />
+        </div>
 
         <!-- Pie Chart -->
-        <PieChart
-          :chart-data="selectedView === 'goals' ? goalsPieChartData : tasksPieChartData"
-          :chart-options="chartOptions"
-          class="mt-4"
-        />
+        <div class="p-4 bg-surface rounded shadow">
+          <PieChart
+            :chart-data="selectedView === 'goals' ? goalsPieChartData : tasksPieChartData"
+            :chart-options="pieChartOptions"
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -110,13 +99,7 @@ const dashboard = ref<DashboardDTO>({
   completedTasksArchive: [],
 })
 const isLoading = ref(true)
-const selectedPeriodType = ref('day') // Default period type
 const selectedView = ref('goals') // Default view
-
-const chartOptions = {
-  responsive: true,
-  maintainAspectRatio: false,
-}
 
 const goalsLineChartData = computed(() => ({
   labels: Object.keys(dashboard.value.goalsCompletedByPeriod),
@@ -163,10 +146,14 @@ const tasksPieChartData = computed(() => ({
 }))
 
 const fetchDashboardData = async () => {
-  isLoading.value = true
+  const loadingDelay = setTimeout(() => {
+    isLoading.value = true;
+  }, 200);
+
   try {
-    dashboard.value = await goalsStore.fetchDashboard(selectedPeriodType.value)
+    dashboard.value = await goalsStore.fetchDashboard('month')
   } finally {
+    clearTimeout(loadingDelay);
     isLoading.value = false
   }
 }
@@ -175,8 +162,37 @@ const formatDate = (date: string | null) => (date ? new Date(date).toLocaleDateS
 
 onMounted(fetchDashboardData)
 
-// Watch for changes in the selected period type and fetch data dynamically
-watch(selectedPeriodType, fetchDashboardData)
+const chartOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    tooltip: {
+      callbacks: {
+        label: (context: import('chart.js').TooltipItem<'line'>) => `${context.label}: ${context.raw}`,
+      },
+    },
+  },
+  scales: {
+    y: {
+      ticks: {
+        stepSize: 1,
+        callback: (value: number) => Number.isInteger(value) ? value : null,
+      },
+    },
+  },
+}
+
+const pieChartOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    datalabels: {
+      color: '#000000', // White numbers
+      font: { weight: 'bold', size: 16 },
+      formatter: (value: number) => value,
+    },
+  },
+}
 </script>
 
 <style scoped>

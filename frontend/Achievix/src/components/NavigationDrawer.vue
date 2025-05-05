@@ -1,16 +1,22 @@
 <template>
   <div class="fixed inset-y-0 left-0 w-64 bg-surface shadow-lg transform transition-transform md:translate-x-0" :class="{ '-translate-x-full': !isOpen }">
-    <div class="p-4 flex items-center">
+    <div class="px-4 pt-4 flex items-center">
       <router-link to="/">
-        <img src="/src/assets/logo.png" alt="Achievix Logo" class="h-15" />
+        <span class="text-2xl font-bold text-text flex items-center ml-5">
+          <img src="/src/assets/logo.png" alt="Achievix Logo" class="h-15" />
+          Achievix
+        </span>
       </router-link>
     </div>
-    <nav class="mt-4">
-      <router-link to="/dashboard" class="block px-4 py-2 text-text hover:bg-primary hover:text-white transition-colors duration-300">Dashboard</router-link>
+    <nav class="mt-2">
+      <router-link to="/dashboard"
+                   class="text-xl font-semibold block px-4 py-2 text-text hover:bg-primary hover:text-white transition-colors duration-300"
+      >My Statistics
+      </router-link>
 
-      <div class="px-4 py-2 text-text cursor-pointer transition-colors duration-300 group/section hover:bg-primary hover:text-white">
+      <div class="px-4 py-2 text-text cursor-default transition-colors duration-300 group/section hover:bg-primary hover:text-white">
         <div class="flex justify-between items-center">
-          <span class="font-semibold">My Goals</span>
+          <span class="font-semibold text-xl">My Goals</span>
           <button @click="openGoalModal" class="hover:bg-secondary rounded-md cursor-pointer transition-colors duration-300" title="Add Goal">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -21,7 +27,7 @@
           <li
             v-for="goal in goals"
             :key="goal.id"
-            class="group flex justify-between items-center py-1 hover:bg-secondary/60 transition-colors duration-300"
+            class="text-lg group flex justify-between items-center py-1 hover:bg-secondary/70"
           >
             <router-link
               :to="`/goals/${goal.id}`"
@@ -31,7 +37,7 @@
             </router-link>
             <button
               @click="openDeleteModal(goal.id, goal.title)"
-              class="ml-2 opacity-0 group-hover:opacity-100 text-error hover:text-error-dark transition-colors duration-300 cursor-pointer"
+              class="ml-2 opacity-0 group-hover:opacity-100 text-error hover:text-error-dark cursor-pointer"
               title="Delete Goal"
             >
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -43,7 +49,11 @@
       </div>
 
       <div class="border-t border-text mx-3 my-2"></div>
-      <button @click="logout" class="block w-full text-left px-4 py-2 text-text hover:bg-primary hover:text-white cursor-pointer transition-colors duration-300">Logout</button>
+      <button @click="logout"
+              class="text-xl font-semibold block w-full text-left px-4 py-2 text-text hover:bg-primary hover:text-white cursor-pointer transition-colors duration-300"
+      >
+        Logout
+      </button>
     </nav>
     <DeleteModal
       v-if="showDeleteModal"
