@@ -6,11 +6,14 @@ import vue from "@vitejs/plugin-vue";
 export default mergeConfig(
   viteConfig,
   defineConfig({
-    plugins: [vue()],
+    plugins: [],
     test: {
       environment: 'jsdom',
       globals: true,
-      setupFiles: './tests/setup.ts',
+      setupFiles: [
+        fileURLToPath(new URL('./src/tests/unit/setup/api.mock.ts', import.meta.url)),
+        fileURLToPath(new URL('./src/tests/router-mock-setup.ts', import.meta.url)),
+      ],
       coverage: {
         provider: 'v8',
         reporter: ['text', 'json', 'html'],

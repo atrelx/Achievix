@@ -8,7 +8,7 @@ import GoalDetails from '../views/GoalDetails.vue'
 import TaskForm from '../views/TaskForm.vue'
 import Signup from '../views/Signup.vue'
 
-const routes = [
+export const routes = [
   { path: '/login', name: 'Login', component: Login },
   { path: '/signup', name: 'Signup', component: Signup },
   {

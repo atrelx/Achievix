@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia'
 import api from '../utils/api.ts';
 import type { AuthRequest } from '../types/dtos'
-import router from "@/router";
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -41,7 +40,6 @@ export const useAuthStore = defineStore('auth', {
       try {
         await api.post('/auth/logout')
         this.isAuthenticated = false
-        router.push('/login');
       } catch (error: any) {
         console.error('Error during logout:', error)
         this.isAuthenticated = true

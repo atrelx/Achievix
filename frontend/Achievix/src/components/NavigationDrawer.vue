@@ -97,6 +97,7 @@ onMounted(async () => {
 const logout = async () => {
   try {
     await authStore.logout();
+    await router.push('/login');
   } catch (error) {
     console.error('Error during logout:', error);
   }
