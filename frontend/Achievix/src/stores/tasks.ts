@@ -34,7 +34,7 @@ export const useTasksStore = defineStore('tasks', {
         handleApiError(error);
       }
     },
-    async updateTask(id: number, task: { title: string; goalId: number; deadline: string }) {
+    async updateTask(id: number, task: TaskCreateDTO) {
       try {
         const response = await api.put(`/tasks/${id}`, task)
         const index = this.tasks.findIndex((t) => t.id === id)

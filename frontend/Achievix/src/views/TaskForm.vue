@@ -62,7 +62,7 @@ import { useGoalsStore } from '../stores/goals'
 import { useTasksStore } from '../stores/tasks'
 import { useVuelidate } from '@vuelidate/core'
 import { required, helpers } from '@vuelidate/validators'
-import type { GoalDTO } from '../types/dtos'
+import type {GoalDTO, TaskCreateDTO} from '../types/dtos'
 
 const router = useRouter()
 const route = useRoute()
@@ -72,9 +72,9 @@ const isLoading = ref(false)
 const goals = ref<GoalDTO[]>([])
 const isEdit = ref(false)
 
-const form = ref({
+const form = ref<TaskCreateDTO>({
   title: '',
-  goalId: null as number | null,
+  goalId: 0,
   deadline: '',
 })
 

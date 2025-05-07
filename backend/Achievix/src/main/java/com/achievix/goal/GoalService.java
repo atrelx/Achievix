@@ -55,8 +55,6 @@ public class GoalService {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findById(Long.parseLong(userId))
                 .orElseThrow(() -> new ResourceNotFoundException("User with ID " + userId + " not found"));
-        System.out.println("User found: " + user);
-        System.out.println("CreateGoalDTO: " + createGoalDTO);
 
         Goal goal = goalMapper.toEntity(createGoalDTO);
         goal.setUser(user);
@@ -67,11 +65,9 @@ public class GoalService {
         emailNotification.setToEmail(user.getEmail());
         emailNotification.setSubject("New Goal Created");
         emailNotification.setBody("You have created a new goal: " + goal.getTitle());
-//        kafkaProducerService.sendEmailNotification(emailNotification);
+        kafkaProducerService.sendEmailNotification(emailNotification);
 
-        System.out.println("Goal before saving: " + goal);
         Goal savedGoal = goalRepository.save(goal);
-        System.out.println("Goal created: " + savedGoal);
         return goalMapper.toDTO(savedGoal);
     }
 
