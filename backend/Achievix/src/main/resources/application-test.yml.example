@@ -1,0 +1,30 @@
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/achievix?createDatabaseIfNotExist=true}
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:rootpassword}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false # False for tests
+
+# ignores logging of SQL statements
+logging:
+  level:
+    org.hibernate.SQL: ERROR
+    org.hibernate.type.descriptor.sql: ERROR
+    org.hibernate.orm.jdbc.bind: ERROR
+    org.hibernate.type: ERROR
+
+jwt:
+  secret: ${JWT_SECRET:test-jwt-secret-key}
+  access-token-expiration: 900
+  refresh-token-expiration: 604800
+
+server:
+  port: 8080
+
+sendgrid:
+  api-key: ${SENDGRID_API_KEY:your-sendgrid-api-key-here}
+  from-email-address: ${SENDGRID_FROM_EMAIL_ADDRESS:your-verified-email@example.com}

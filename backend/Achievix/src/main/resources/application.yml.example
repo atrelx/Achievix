@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: Achievix
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/achievix?createDatabaseIfNotExist=true}
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:rootpassword}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+  kafka:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      group-id: achievix-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: com.achievix.sendgrid.dto,com.achievix.task.dto
+
+jwt:
+  secret: ${JWT_SECRET:your-jwt-secret-key-here}
+  access-token-expiration: 900 # 15 minutes in seconds
+  refresh-token-expiration: 604800 # 7 days in seconds
+
+server:
+  port: 8080
+
+sendgrid:
+  api-key: ${SENDGRID_API_KEY:your-sendgrid-api-key-here}
+  from-email-address: ${SENDGRID_FROM_EMAIL_ADDRESS:your-verified-email@example.com}

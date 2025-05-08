@@ -41,8 +41,8 @@
           <p class="text-text text-xl ml-4">
             <span class="font-semibold">Completion Rate 📊:</span> {{
               selectedView === 'goals'
-                ? ((dashboard.completedGoals / (dashboard.completedGoals + dashboard.activeGoals)) * 100)
-                : ((dashboard.completedTasks / (dashboard.completedTasks + dashboard.activeTasks)) * 100)
+                ? Math.floor((dashboard.completedGoals / (dashboard.completedGoals + dashboard.activeGoals)) * 100)
+                : Math.floor((dashboard.completedTasks / (dashboard.completedTasks + dashboard.activeTasks)) * 100)
             }}%
           </p>
         </div>
@@ -101,27 +101,35 @@ const dashboard = ref<DashboardDTO>({
 const isLoading = ref(true)
 const selectedView = ref('goals') // Default view
 
-const goalsLineChartData = computed(() => ({
-  labels: Object.keys(dashboard.value.goalsCompletedByPeriod),
-  datasets: [
-    {
-      label: 'Goals Completed',
-      borderColor: '#4F46E5',
-      data: Object.values(dashboard.value.goalsCompletedByPeriod),
-    },
-  ],
-}))
+const goalsLineChartData = computed(() => {
+  const sortedLabels = Object.keys(dashboard.value.goalsCompletedByPeriod).sort();
 
-const tasksLineChartData = computed(() => ({
-  labels: Object.keys(dashboard.value.tasksCompletedByPeriod),
-  datasets: [
-    {
-      label: 'Tasks Completed',
-      borderColor: '#10B981',
-      data: Object.values(dashboard.value.tasksCompletedByPeriod),
-    },
-  ],
-}))
+  return {
+    labels: sortedLabels,
+    datasets: [
+      {
+        label: 'Goals Completed',
+        borderColor: '#4F46E5',
+        data: sortedLabels.map(label => dashboard.value.goalsCompletedByPeriod[label]),
+      },
+    ],
+  };
+})
+
+const tasksLineChartData = computed(() => {
+  const sortedLabels = Object.keys(dashboard.value.tasksCompletedByPeriod).sort();
+
+  return {
+    labels: sortedLabels,
+    datasets: [
+      {
+        label: 'Tasks Completed',
+        borderColor: '#10B981',
+        data: sortedLabels.map(label => dashboard.value.tasksCompletedByPeriod[label]),
+      },
+    ],
+  };
+})
 
 const goalsPieChartData = computed(() => ({
   labels: ['Completed Goals', 'Active Goals'],
@@ -187,7 +195,7 @@ const pieChartOptions = {
   maintainAspectRatio: false,
   plugins: {
     datalabels: {
-      color: '#000000', // White numbers
+      color: '#000000',
       font: { weight: 'bold', size: 16 },
       formatter: (value: number) => value,
     },
