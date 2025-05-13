@@ -5,7 +5,7 @@ Welcome to **Achievix**, a full-stack web application designed to help you set, 
 ## 🎥 Project Demo
 Check out the demo video showcasing Achievix's core features:
 
-<video src="assets/demo.mp4" controls width="600"></video>
+https://github.com/user-attachments/assets/109e09bb-c0f1-4e07-b8e1-82997b404e56
 
 ## 🛠️ Tech Stack
 ### Backend
